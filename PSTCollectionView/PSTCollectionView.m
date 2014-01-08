@@ -683,6 +683,16 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     PSTCollectionViewLayoutAttributes *layoutAttributes = [self.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
     if (layoutAttributes) {
         CGRect targetRect = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
+        
+        // The if block below is a super dirty hack to fix an issue: when there is a horizontally scrolling collection view, and it has some top edge inset
+        // scrolling trying to center a cell becomes tricky, in order to center it horizontally you need to use PSTCollectionViewScrollPositionCenteredVertically
+        // and its actual vertical scrolling position becomes broken (potentially because of the top inset)
+        // The hack basically asks the scroll view that "ok we just want to center it in X direction, don't worry about Y"
+        if ([self.collectionViewLayout isKindOfClass:[PSTCollectionViewFlowLayout class]] && [(PSTCollectionViewFlowLayout*)self.collectionViewLayout scrollDirection] == PSTCollectionViewScrollDirectionHorizontal && scrollPosition == PSTCollectionViewScrollPositionCenteredVertically) {
+            targetRect.origin.y = 0;
+            targetRect.size.height = 1;
+        }
+
         [self scrollRectToVisible:targetRect animated:animated];
     }
 }
