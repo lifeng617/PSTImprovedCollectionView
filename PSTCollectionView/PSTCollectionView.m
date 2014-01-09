@@ -681,27 +681,28 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     [self layoutSubviews];
 
     PSTCollectionViewLayoutAttributes *layoutAttributes = [self.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
+    NSLog(@"got layout attribute for indexPath:%@.. frame:%@", indexPath, NSStringFromCGRect(layoutAttributes.frame));
     if (layoutAttributes) {
-        CGRect targetRect = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
+        CGPoint targetPoint = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
         
-        // The if block below is a super dirty hack to fix an issue: when there is a horizontally scrolling collection view, and it has some top edge inset
-        // scrolling trying to center a cell becomes tricky, in order to center it horizontally you need to use PSTCollectionViewScrollPositionCenteredVertically
-        // and its actual vertical scrolling position becomes broken (potentially because of the top inset)
-        // The hack basically asks the scroll view that "ok we just want to center it in X direction, don't worry about Y"
-        if ([self.collectionViewLayout isKindOfClass:[PSTCollectionViewFlowLayout class]] && [(PSTCollectionViewFlowLayout*)self.collectionViewLayout scrollDirection] == PSTCollectionViewScrollDirectionHorizontal && scrollPosition == PSTCollectionViewScrollPositionCenteredVertically) {
-            targetRect.origin.y = 0;
-            targetRect.size.height = 1;
+        void(^move)() = ^{
+            self.contentOffset = targetPoint;
+        };
+        if (animated) {
+            [UIView animateWithDuration:0.3 animations:move];
         }
-
-        [self scrollRectToVisible:targetRect animated:animated];
+        else {
+            move();
+        }
     }
 }
 
-- (CGRect)makeRect:(CGRect)targetRect toScrollPosition:(PSTCollectionViewScrollPosition)scrollPosition {
+- (CGPoint)makeRect:(CGRect)targetRect toScrollPosition:(PSTCollectionViewScrollPosition)scrollPosition {
     // split parameters
     NSUInteger verticalPosition = scrollPosition&0x07; // 0000 0111
     NSUInteger horizontalPosition = scrollPosition&0x38; // 0011 1000
-
+    CGPoint targetPoint = targetRect.origin;
+    
     if (verticalPosition != PSTCollectionViewScrollPositionNone
             && verticalPosition != PSTCollectionViewScrollPositionTop
             && verticalPosition != PSTCollectionViewScrollPositionCenteredVertically
@@ -717,41 +718,42 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     }
 
     CGRect frame = self.layer.bounds;
-    CGFloat calculateX;
-    CGFloat calculateY;
 
     switch (verticalPosition) {
         case PSTCollectionViewScrollPositionCenteredVertically:
-            calculateY = fmax(targetRect.origin.y - ((frame.size.height / 2) - (targetRect.size.height / 2)), -self.contentInset.top);
-            targetRect = CGRectMake(targetRect.origin.x, calculateY, targetRect.size.width, frame.size.height);
+            targetPoint.y = fmax(targetRect.origin.y - ((frame.size.height / 2) - (targetRect.size.height / 2)), -self.contentInset.top);
             break;
         case PSTCollectionViewScrollPositionTop:
-            targetRect = CGRectMake(targetRect.origin.x, targetRect.origin.y, targetRect.size.width, frame.size.height);
+            targetPoint.y = targetRect.origin.y;
             break;
 
         case PSTCollectionViewScrollPositionBottom:
-            calculateY = fmax(targetRect.origin.y - (frame.size.height - targetRect.size.height), -self.contentInset.top);
-            targetRect = CGRectMake(targetRect.origin.x, calculateY, targetRect.size.width, frame.size.height);
+            targetPoint.y = fmax(targetRect.origin.y - (frame.size.height - targetRect.size.height), -self.contentInset.top);
+            break;
+        default:
+            targetPoint.y = -self.contentInset.top;
             break;
     }
 
     switch (horizontalPosition) {
         case PSTCollectionViewScrollPositionCenteredHorizontally:
-            calculateX = targetRect.origin.x - ((frame.size.width / 2) - (targetRect.size.width / 2));
-            targetRect = CGRectMake(calculateX, targetRect.origin.y, frame.size.width, targetRect.size.height);
+            targetPoint.x = targetRect.origin.x - ((frame.size.width / 2) - (targetRect.size.width / 2));
             break;
 
         case PSTCollectionViewScrollPositionLeft:
-            targetRect = CGRectMake(targetRect.origin.x, targetRect.origin.y, frame.size.width, targetRect.size.height);
+            targetPoint.x = targetRect.origin.x;
             break;
 
         case PSTCollectionViewScrollPositionRight:
-            calculateX = targetRect.origin.x - (frame.size.width - targetRect.size.width);
-            targetRect = CGRectMake(calculateX, targetRect.origin.y, frame.size.width, targetRect.size.height);
+            targetPoint.x = targetRect.origin.x - (frame.size.width - targetRect.size.width);
+            break;
+        default:
+            targetPoint.x = -self.contentInset.left;
             break;
     }
 
-    return targetRect;
+    NSLog(@"target point:%f,%f", targetPoint.x, targetPoint.y);
+    return targetPoint;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -1135,8 +1137,8 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
             PSTCollectionViewLayoutAttributes *layoutAttributes = [layout layoutAttributesForItemAtIndexPath:centerItemIndexPath];
             if (layoutAttributes) {
                 PSTCollectionViewScrollPosition scrollPosition = PSTCollectionViewScrollPositionCenteredVertically|PSTCollectionViewScrollPositionCenteredHorizontally;
-                CGRect targetRect = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
-                targetOffset = CGPointMake(fmax(0.f, targetRect.origin.x), fmax(0.f, targetRect.origin.y));
+                CGPoint targetPoint = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
+                targetOffset = CGPointMake(fmax(0.f, targetPoint.x), fmax(0.f, targetPoint.y));
             }
         }
 
