@@ -131,9 +131,24 @@ static char kPSTCachedItemRectsKey;
     // Apple calls _layoutAttributesForItemsInRect
     if (!_data) [self prepareLayout];
 
+    CGRect largerXFrame = self.bounds;
+    CGRect largerYFrame = self.bounds;
+    if (_preloadMask & PSTCollectionViewPreloadRight) {
+        largerXFrame.size.width += 2;
+    }
+    if (_preloadMask & PSTCollectionViewPreloadLeft) {
+        largerXFrame.origin.x -= 1;
+    }
+    if (_preloadMask & PSTCollectionViewPreloadBelow) {
+        largerYFrame.size.height += 2;
+    }
+    if (_preloadMask & PSTCollectionViewPreloadAbove) {
+        largerYFrame.origin.y -= 1;
+    }
+    
     NSMutableArray *layoutAttributesArray = [NSMutableArray array];
     for (PSTGridLayoutSection *section in _data.sections) {
-        if (CGRectIntersectsRect(section.frame, rect)) {
+        if (CGRectIntersectsRect(section.frame, largerYFrame) || CGRectIntersectsRect(section.frame, largerXFrame)) {
 
             // if we have fixed size, calculate item frames only once.
             // this also uses the default PSTFlowLayoutCommonRowHorizontalAlignmentKey alignment
@@ -160,7 +175,7 @@ static char kPSTCachedItemRectsKey;
                 CGRect normalizedRowFrame = row.rowFrame;
                 normalizedRowFrame.origin.x += section.frame.origin.x;
                 normalizedRowFrame.origin.y += section.frame.origin.y;
-                if (CGRectIntersectsRect(normalizedRowFrame, rect)) {
+                if (CGRectIntersectsRect(normalizedRowFrame, largerXFrame) || CGRectIntersectsRect(normalizedRowFrame, largerYFrame)) {
                     // TODO be more fine-grained for items
 
                     for (NSInteger itemIndex = 0; itemIndex < row.itemCount; itemIndex++) {

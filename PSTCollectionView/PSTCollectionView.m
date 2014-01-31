@@ -1402,20 +1402,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 // update currently visible cells, fetches new cells if needed
 // TODO: use now parameter.
 - (void)updateVisibleCellsNow:(BOOL)now {
-    CGRect largerFrame = self.bounds;
-    if (_preloadMask & PSTCollectionViewPreloadBelow) {
-        largerFrame.size.height += 2;
-    }
-    if (_preloadMask & PSTCollectionViewPreloadRight) {
-        largerFrame.size.width += 2;
-    }
-    if (_preloadMask & PSTCollectionViewPreloadLeft) {
-        largerFrame.origin.x -= 1;
-    }
-    if (_preloadMask & PSTCollectionViewPreloadAbove) {
-        largerFrame.origin.y -= 1;
-    }
-    NSArray *layoutAttributesArray = [_collectionViewData layoutAttributesForElementsInRect:largerFrame];
+    NSArray *layoutAttributesArray = [_collectionViewData layoutAttributesForElementsInRect:self.bounds];
 
     if (layoutAttributesArray == nil || layoutAttributesArray.count == 0) {
         // If our layout source isn't providing any layout information, we should just

@@ -48,17 +48,6 @@ typedef NS_ENUM(NSUInteger, PSTCollectionElementCategory) {
 @property (nonatomic, assign) IBOutlet id<PSTCollectionViewDataSource> dataSource;
 @property (nonatomic, strong) UIView *backgroundView; // will be automatically resized to track the size of the collection view and placed behind all cells and supplementary views.
 
-typedef NS_OPTIONS(NSUInteger, PSTCollectionViewPreload) {
-    PSTCollectionViewPreloadNone,
-    PSTCollectionViewPreloadBelow = 1,
-    PSTCollectionViewPreloadRight = 2,
-    PSTCollectionViewPreloadLeft = 4,
-    PSTCollectionViewPreloadAbove = 8,
-} ;
-
-/// The bit mask determining on which directions we will be preloading one cell
-@property (nonatomic, assign) PSTCollectionViewPreload preloadMask;
-
 
 // For each reuse identifier that the collection view will use, register either a class or a nib from which to instantiate a cell.
 // If a nib is registered, it must contain exactly 1 top level object which is a PSTCollectionViewCell.
