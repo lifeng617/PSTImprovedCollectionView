@@ -131,8 +131,8 @@ static char kPSTCachedItemRectsKey;
     // Apple calls _layoutAttributesForItemsInRect
     if (!_data) [self prepareLayout];
 
-    CGRect largerXFrame = self.bounds;
-    CGRect largerYFrame = self.bounds;
+    CGRect largerXFrame = rect;
+    CGRect largerYFrame = rect;
     if (_preloadMask & PSTCollectionViewPreloadRight) {
         largerXFrame.size.width += 2;
     }
