@@ -296,6 +296,9 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (!self.window) {
+        return;
+    }
     id<PSTCollectionViewDelegate> delegate = self.extVars.collectionViewDelegate;
     if ((id)delegate != self && [delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
         [delegate scrollViewDidScroll:scrollView];
