@@ -843,6 +843,24 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     return self.isDecelerating || self.contentOffset.y < 0 || self.contentOffset.y > MAX(0, self.contentSize.height - self.bounds.size.height);
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        if (self.contentSize.width > self.bounds.size.width) {
+            if (abs(velocity.y) * 2 < abs(velocity.x)) {
+                return YES;
+            }
+        }
+        if (self.contentSize.height > self.bounds.size.height) {
+            if (abs(velocity.x) * 2 < abs(velocity.y)) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     [super touchesCancelled:touches withEvent:event];
 
