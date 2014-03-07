@@ -848,12 +848,12 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
         if (self.contentSize.width > self.bounds.size.width) {
-            if (abs(velocity.y) * 2 < abs(velocity.x)) {
+            if (abs(velocity.y) * (_decreasesHorizontalSensitivity ? 2. : 1.) < abs(velocity.x)) {
                 return YES;
             }
         }
         if (self.contentSize.height > self.bounds.size.height) {
-            if (abs(velocity.x) * 2 < abs(velocity.y)) {
+            if (abs(velocity.x) * (_decreasesVerticalSensitivity ? 2. : 1.) < abs(velocity.y)) {
                 return YES;
             }
         }
