@@ -52,6 +52,7 @@ typedef NS_ENUM(NSUInteger, PSTCollectionElementCategory) {
 
 @property (nonatomic) BOOL decreasesVerticalSensitivity;
 
+@property (nonatomic, readonly) CGPoint lastAcceptedSwipeVelocity;
 
 // For each reuse identifier that the collection view will use, register either a class or a nib from which to instantiate a cell.
 // If a nib is registered, it must contain exactly 1 top level object which is a PSTCollectionViewCell.

@@ -860,6 +860,10 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
         else {
             result = [super gestureRecognizerShouldBegin:gestureRecognizer];
         }
+            
+        if (result) {
+            _lastAcceptedSwipeVelocity = velocity;
+        }
     }
     else {
         NSLog(@"not even pan gesture");
