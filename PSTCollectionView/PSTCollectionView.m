@@ -845,20 +845,29 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    CGPoint velocity;
+    BOOL result;
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
-        if (self.contentSize.width > self.bounds.size.width) {
-            if (abs(velocity.y) * (_decreasesHorizontalSensitivity ? 2. : 1.) < abs(velocity.x)) {
-                return YES;
-            }
+        velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
+        if (_decreasesHorizontalSensitivity) {
+            NSLog(@"horizontal guy");
+            result = (abs(velocity.y) * 2. <= abs(velocity.x));
         }
-        if (self.contentSize.height > self.bounds.size.height) {
-            if (abs(velocity.x) * (_decreasesVerticalSensitivity ? 2. : 1.) < abs(velocity.y)) {
-                return YES;
-            }
+        else if (_decreasesVerticalSensitivity) {
+            NSLog(@"vertical guy!!!!!");
+            result = (abs(velocity.x) * 2. <= abs(velocity.y));
+        }
+        else {
+            result = [super gestureRecognizerShouldBegin:gestureRecognizer];
         }
     }
-    return NO;
+    else {
+        NSLog(@"not even pan gesture");
+        result = [super gestureRecognizerShouldBegin:gestureRecognizer];
+    }
+    
+    NSLog(@"scroll: %@ %f %f, result: %d, super's result:%d", gestureRecognizer.class, velocity.x, velocity.y, result, [super gestureRecognizerShouldBegin:gestureRecognizer]);
+    return result;
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
