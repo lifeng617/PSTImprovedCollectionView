@@ -171,31 +171,38 @@ static char kPSTCachedItemRectsKey;
                 if (itemRects) rectCache[@(sectionIndex)] = itemRects;
             }
 
-            for (PSTGridLayoutRow *row in section.rows) {
-                CGRect normalizedRowFrame = row.rowFrame;
-                normalizedRowFrame.origin.x += section.frame.origin.x;
-                normalizedRowFrame.origin.y += section.frame.origin.y;
-                if (CGRectIntersectsRect(normalizedRowFrame, largerXFrame) || CGRectIntersectsRect(normalizedRowFrame, largerYFrame)) {
-                    // TODO be more fine-grained for items
-
-                    for (NSInteger itemIndex = 0; itemIndex < row.itemCount; itemIndex++) {
-                        PSTCollectionViewLayoutAttributes *layoutAttributes;
-                        NSUInteger sectionItemIndex;
-                        CGRect itemFrame;
-                        if (row.fixedItemSize) {
-                            itemFrame = [itemRects[itemIndex] CGRectValue];
-                            sectionItemIndex = row.index * section.itemsByRowCount + itemIndex;
-                        }else {
-                            PSTGridLayoutItem *item = row.items[itemIndex];
-                            sectionItemIndex = [section.items indexOfObjectIdenticalTo:item];
-                            itemFrame = item.itemFrame;
+            NSMutableSet* rowsAdded = [NSMutableSet new];
+            void(^addRow)(CGRect testFrame) = ^(CGRect testFrame){
+                for (PSTGridLayoutRow *row in section.rows) {
+                    CGRect normalizedRowFrame = row.rowFrame;
+                    normalizedRowFrame.origin.x += section.frame.origin.x;
+                    normalizedRowFrame.origin.y += section.frame.origin.y;
+                    if (CGRectIntersectsRect(normalizedRowFrame, testFrame) && ![rowsAdded containsObject:row]) {
+                        // TODO be more fine-grained for items
+                        [rowsAdded addObject:row];
+                        
+                        for (NSInteger itemIndex = 0; itemIndex < row.itemCount; itemIndex++) {
+                            PSTCollectionViewLayoutAttributes *layoutAttributes;
+                            NSUInteger sectionItemIndex;
+                            CGRect itemFrame;
+                            if (row.fixedItemSize) {
+                                itemFrame = [itemRects[itemIndex] CGRectValue];
+                                sectionItemIndex = row.index * section.itemsByRowCount + itemIndex;
+                            }else {
+                                PSTGridLayoutItem *item = row.items[itemIndex];
+                                sectionItemIndex = [section.items indexOfObjectIdenticalTo:item];
+                                itemFrame = item.itemFrame;
+                            }
+                            layoutAttributes = [[self.class layoutAttributesClass] layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:sectionItemIndex inSection:sectionIndex]];
+                            layoutAttributes.frame = CGRectMake(normalizedRowFrame.origin.x + itemFrame.origin.x, normalizedRowFrame.origin.y + itemFrame.origin.y, itemFrame.size.width, itemFrame.size.height);
+                            [layoutAttributesArray addObject:layoutAttributes];
                         }
-                        layoutAttributes = [[self.class layoutAttributesClass] layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:sectionItemIndex inSection:sectionIndex]];
-                        layoutAttributes.frame = CGRectMake(normalizedRowFrame.origin.x + itemFrame.origin.x, normalizedRowFrame.origin.y + itemFrame.origin.y, itemFrame.size.width, itemFrame.size.height);
-                        [layoutAttributesArray addObject:layoutAttributes];
                     }
                 }
-            }
+            };
+            addRow(rect);
+            addRow(largerXFrame);
+            addRow(largerYFrame);
 
             CGRect normalizedFooterFrame = section.footerFrame;
             normalizedFooterFrame.origin.x += section.frame.origin.x;
