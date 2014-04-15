@@ -48,11 +48,17 @@ typedef NS_ENUM(NSUInteger, PSTCollectionElementCategory) {
 @property (nonatomic, assign) IBOutlet id<PSTCollectionViewDataSource> dataSource;
 @property (nonatomic, strong) UIView *backgroundView; // will be automatically resized to track the size of the collection view and placed behind all cells and supplementary views.
 
+/// Makes horizontal swipe slightly harder than usual. This is for the scenario where vertical scroll view X is nested in horizontal scroll view Y, now we allow Y to scroll while X is still bouncing. Setting this property to true for Y keeps the scroll views from being too sensitive.
 @property (nonatomic) BOOL decreasesHorizontalSensitivity;
 
+/// Similar to decreasesHorizontalSensitivity.
 @property (nonatomic) BOOL decreasesVerticalSensitivity;
 
+/// If a swipe successfully happened, this param tracks that swiping velocity
 @property (nonatomic, readonly) CGPoint lastAcceptedSwipeVelocity;
+
+/// Set this before calling reloadData, this is be fired after it's reloaded.
+@property (nonatomic, copy) void(^reloadCompletionHandler)();
 
 // For each reuse identifier that the collection view will use, register either a class or a nib from which to instantiate a cell.
 // If a nib is registered, it must contain exactly 1 top level object which is a PSTCollectionViewCell.

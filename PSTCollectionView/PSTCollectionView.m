@@ -267,6 +267,11 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 
     _collectionViewFlags.fadeCellsForBoundsChange = NO;
     _collectionViewFlags.doneFirstLayout = YES;
+    
+    if (_reloadCompletionHandler) {
+        _reloadCompletionHandler();
+        _reloadCompletionHandler = nil;
+    }
 }
 
 - (void)setFrame:(CGRect)frame {
@@ -684,7 +689,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     [self layoutSubviews];
 
     PSTCollectionViewLayoutAttributes *layoutAttributes = [self.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
-    NSLog(@"got layout attribute for indexPath:%@.. frame:%@", indexPath, NSStringFromCGRect(layoutAttributes.frame));
+    // NSLog(@"got layout attribute for indexPath:%@.. frame:%@", indexPath, NSStringFromCGRect(layoutAttributes.frame));
     if (layoutAttributes) {
         CGPoint targetPoint = [self makeRect:layoutAttributes.frame toScrollPosition:scrollPosition];
         
@@ -755,7 +760,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
             break;
     }
 
-    NSLog(@"target point:%f,%f", targetPoint.x, targetPoint.y);
+    // NSLog(@"target point:%f,%f", targetPoint.x, targetPoint.y);
     return targetPoint;
 }
 
@@ -850,11 +855,11 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
         velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self];
         if (_decreasesHorizontalSensitivity) {
-            NSLog(@"horizontal guy");
+            // NSLog(@"horizontal guy");
             result = (abs(velocity.y) * 2. <= abs(velocity.x));
         }
         else if (_decreasesVerticalSensitivity) {
-            NSLog(@"vertical guy!!!!!");
+            // NSLog(@"vertical guy!!!!!");
             result = (abs(velocity.x) * 2. <= abs(velocity.y));
         }
         else {
@@ -866,11 +871,11 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
         }
     }
     else {
-        NSLog(@"not even pan gesture");
+        // NSLog(@"not even pan gesture");
         result = [super gestureRecognizerShouldBegin:gestureRecognizer];
     }
     
-    NSLog(@"scroll: %@ %f %f, result: %d, super's result:%d", gestureRecognizer.class, velocity.x, velocity.y, result, [super gestureRecognizerShouldBegin:gestureRecognizer]);
+    // NSLog(@"scroll: %@ %f %f, result: %d, super's result:%d", gestureRecognizer.class, velocity.x, velocity.y, result, [super gestureRecognizerShouldBegin:gestureRecognizer]);
     return result;
 }
 
