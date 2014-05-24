@@ -850,6 +850,8 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    BOOL oldiOS = [UIDevice currentDevice].systemVersion.floatValue < 6.;
+    
     CGPoint velocity;
     BOOL result;
     if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
@@ -863,7 +865,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
             result = (abs(velocity.x) * 2. <= abs(velocity.y));
         }
         else {
-            result = [super gestureRecognizerShouldBegin:gestureRecognizer];
+            result = oldiOS? YES : [super gestureRecognizerShouldBegin:gestureRecognizer];
         }
             
         if (result) {
@@ -872,7 +874,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     }
     else {
         // NSLog(@"not even pan gesture");
-        result = [super gestureRecognizerShouldBegin:gestureRecognizer];
+        result = oldiOS? YES: [super gestureRecognizerShouldBegin:gestureRecognizer];
     }
     
     // NSLog(@"scroll: %@ %f %f, result: %d, super's result:%d", gestureRecognizer.class, velocity.x, velocity.y, result, [super gestureRecognizerShouldBegin:gestureRecognizer]);
