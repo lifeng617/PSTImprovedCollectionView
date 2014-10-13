@@ -3,6 +3,7 @@ PSTCollectionView
 
 The initial purpose of PSTCollectionView was to bring UICollectionView to iOS 4 and 5, but as right now most apps don't support iOS 5 any more, the main focus of this fork is to add a cell preload feature to collection view.
 
+Thanks to Peter Steinberger and all the contributors of the original PSTCollectionView project ( steipete/PSTCollectionView)
 
 ## Animations
 
