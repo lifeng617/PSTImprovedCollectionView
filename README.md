@@ -2,6 +2,7 @@ PSTImprovedCollectionView
 =========================
 
 This is an improved version of UICollectionView/PSTCollection:
+
 1. You can let the collection view preload 1 cell or one screen of cells that's not in screen yet, by calling
 
 ``` swift
