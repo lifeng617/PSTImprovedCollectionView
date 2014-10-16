@@ -5,6 +5,7 @@ This is an improved version of UICollectionView/PSTCollection:
 1. You can let the collection view preload 1 cell or one screen of cells that's not in screen yet, by calling
 
 ``` swift
+    // in Swift
     if let flowLayout = collectionView.collectionViewLayout as? PSTCollectionViewFlowLayout {
         flowLayout.preloadMask = .Below  // or (.Above | .Below), or (.Left | .Right)
         flowLayout.preloadAmount = .OneScreen // this is optional, by default it preloads one cell
