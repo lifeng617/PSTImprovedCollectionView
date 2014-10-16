@@ -45,5 +45,6 @@
 // If selectedBackgroundView is different than backgroundView, it will be placed above the background view and animated in on selection.
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIView *selectedBackgroundView;
+@property (nonatomic, strong) NSIndexPath* lastUsedIndexPath;
 
 @end

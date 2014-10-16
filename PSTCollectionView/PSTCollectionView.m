@@ -438,11 +438,23 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 - (id)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath {
     // de-queue cell (if available)
     NSMutableArray *reusableCells = _cellReuseQueues[identifier];
-    PSTCollectionViewCell *cell = [reusableCells lastObject];
+    __block PSTCollectionViewCell *cell;
+    __block NSUInteger dequeuedCellIndex = 0;
+    [reusableCells enumerateObjectsUsingBlock:^(PSTCollectionViewCell* c, NSUInteger idx, BOOL *stop) {
+        if ([c.lastUsedIndexPath isEqual:indexPath]) {
+            cell = c;
+            dequeuedCellIndex = idx;
+            *stop = YES;
+        }
+    }];
+    if (!cell) {
+        cell = [reusableCells lastObject];
+        dequeuedCellIndex = reusableCells.count - 1;
+    }
     PSTCollectionViewLayoutAttributes *attributes = [self.collectionViewLayout layoutAttributesForItemAtIndexPath:indexPath];
 
     if (cell) {
-        [reusableCells removeObjectAtIndex:reusableCells.count - 1];
+        [reusableCells removeObjectAtIndex:dequeuedCellIndex];
     }else {
         if (_cellNibDict[identifier]) {
             // Cell was registered via registerNib:forCellWithReuseIdentifier:
@@ -475,6 +487,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 
     [cell applyLayoutAttributes:attributes];
 
+    cell.lastUsedIndexPath = indexPath;
     return cell;
 }
 
@@ -580,6 +593,9 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     if (_reloadingSuspendedCount != 0) return;
     [self invalidateLayout];
     [_allVisibleViewsDict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        if ([obj isKindOfClass:[PSTCollectionViewCell class]]) {
+            [self reuseCell:(PSTCollectionViewCell*)obj];
+        }
         if ([obj isKindOfClass:UIView.class]) {
             [obj removeFromSuperview];
         }
