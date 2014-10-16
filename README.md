@@ -3,7 +3,7 @@ PSTImprovedCollectionView
 
 This is an improved version of UICollectionView/PSTCollection:
 
-1. You can let the collection view preload 1 cell or one screen of cells that's not in screen yet, by calling
+(1) You can let the collection view preload 1 cell or one screen of cells that's not in screen yet, by calling
 
 ``` swift
     // in Swift
@@ -13,7 +13,7 @@ This is an improved version of UICollectionView/PSTCollection:
     }
 ```
 
-2. When you call collectionView.reloadData, dequeueReusableCellWithReuseIdentifier:indexPath: will try to provide you a cell with the original indexPath. So if you have a collection view loaded and just want to append more data or sections, you can simply call reloadData and in cellForItemAtIndexPath only re-render a cell when necessary (e.g. by comparing the model attached to the cell). (performBatchUpdates/insertItemsAtIndexPaths is much harder to coordinate when the table is more complex..)
+(2) When you call collectionView.reloadData, dequeueReusableCellWithReuseIdentifier:indexPath: will try to provide you a cell with the original indexPath. So if you have a collection view loaded and just want to append more data or sections, you can simply call reloadData and in cellForItemAtIndexPath only re-render a cell when necessary (e.g. by comparing the model attached to the cell). (performBatchUpdates/insertItemsAtIndexPaths is much harder to coordinate when the table is more complex..)
 
 Thanks to Peter Steinberger and all the contributors of the original PSTCollectionView project ( steipete/PSTCollectionView)
 
