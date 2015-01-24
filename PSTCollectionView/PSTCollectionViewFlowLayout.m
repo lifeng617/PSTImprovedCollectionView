@@ -158,7 +158,7 @@ static char kPSTCachedItemRectsKey;
 
     NSMutableArray *layoutAttributesArray = [NSMutableArray array];
     for (PSTGridLayoutSection *section in _data.sections) {
-        if (CGRectIntersectsRect(section.frame, largerYFrame) || CGRectIntersectsRect(section.frame, largerXFrame)) {
+        if (CGRectIntersectsRect(section.outerFrame, largerYFrame) || CGRectIntersectsRect(section.outerFrame, largerXFrame)) {
 
             // if we have fixed size, calculate item frames only once.
             // this also uses the default PSTFlowLayoutCommonRowHorizontalAlignmentKey alignment

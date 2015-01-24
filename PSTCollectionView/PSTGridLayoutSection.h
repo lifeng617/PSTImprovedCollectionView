@@ -43,6 +43,8 @@
 @property (nonatomic, assign, readonly) NSInteger itemsByRowCount;
 @property (nonatomic, assign, readonly) NSInteger indexOfImcompleteRow; // typo as of iOS6B3
 
+@property (nonatomic, readonly) CGRect outerFrame;
+
 //- (PSTGridLayoutSection *)copyFromLayoutInfo:(PSTGridLayoutInfo *)layoutInfo;
 
 // Faster variant of invalidate/compute

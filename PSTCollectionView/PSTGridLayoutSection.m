@@ -207,4 +207,17 @@
     return self.fixedItemSize ? _itemsCount : (NSInteger)self.items.count;
 }
 
+- (CGRect)outerFrame
+{
+    CGRect r = self.frame;
+    
+    if (self.layoutInfo.horizontal) {
+        r.size.height += (self.sectionMargins.top + self.sectionMargins.bottom);
+    }else {
+        r.size.width += (self.sectionMargins.left + self.sectionMargins.right);
+    }
+    
+    return r;
+}
+
 @end
